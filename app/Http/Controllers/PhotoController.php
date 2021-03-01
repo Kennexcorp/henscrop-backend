@@ -19,18 +19,9 @@ class PhotoController extends Controller
     {
         //
         try {
-            //code...
-            // $photos = auth()->user()->photos->getMedia('photos');
 
             $photos = auth()->user()->photos->pluck('url');
 
-            // $photoUrls = collect([]);
-
-            // foreach($photos as $photo) {
-            //     $photoUrls->push($photo->getFullUrl()."");
-            // }
-
-            // error_log(json_encode($photoUrls));
         } catch (\Throwable $th) {
             //throw $th;
             return $this->errorResponse("No Photos found");

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use JD\Cloudder\Facades\Cloudder;
 
 class VideoController extends Controller
 {
@@ -17,11 +18,11 @@ class VideoController extends Controller
     {
         //
         try {
-            //code...
-            $videos = auth()->user()->videos->getMedia('videos');
+
+            $videos = auth()->user()->videos;
         } catch (\Throwable $th) {
             //throw $th;
-            return $this->errorResponse("No Videos found");
+            return $this->errorResponse("No videos found");
         }
 
         return $this->successResponse("Success", $videos);
@@ -44,11 +45,29 @@ class VideoController extends Controller
             return $this->errorResponse($validator->errors());
         }
 
-        if(isset($request->photos)) {
+        $videoUrls = collect([]);
+        try {
+            //code...
+            $files = collect([]);
+            foreach ($request->file('videos') as $video) {
 
-            auth()->user()->photos->addAllMediaFromRequest('videos[]')->each(function ($fileAdder) {
-                $fileAdder->toMediaCollection('videos');
-            });
+                error_log(json_encode($video->getRealPath()));
+                Cloudder::uploadVideo($video->getRealPath(), null);
+                $uploadedFile = Cloudder::getResult();
+
+                auth()->user()->videos()->create([
+                    'name' => $video->getClientOriginalName(),
+                    'url' => $uploadedFile['url'],
+                ]);
+
+                $files->push($uploadedFile);
+            }
+
+            error_log(json_encode($files));
+        } catch (\Throwable $th) {
+            //throw $th;
+            return $this->errorResponse($th->getMessage());
+
         }
 
         return $this->successResponse("Success");
