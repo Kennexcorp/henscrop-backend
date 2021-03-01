@@ -11,7 +11,8 @@ class Document extends Model
 
     protected $fillable = [
         'url',
-        'user_id'
+        'user_id',
+        'name'
     ];
 
     public function user() {

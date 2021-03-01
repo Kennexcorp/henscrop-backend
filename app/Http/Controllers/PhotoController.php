@@ -6,6 +6,7 @@ use App\Models\Photo;
 use App\Models\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use JD\Cloudder\Facades\Cloudder;
 
 class PhotoController extends Controller
 {
@@ -19,21 +20,23 @@ class PhotoController extends Controller
         //
         try {
             //code...
-            $photos = auth()->user()->photos->getMedia('photos');
+            // $photos = auth()->user()->photos->getMedia('photos');
 
-            $photoUrls = collect([]);
+            $photos = auth()->user()->photos->pluck('url');
 
-            foreach($photos as $photo) {
-                $photoUrls->push($photo->getFullUrl()."");
-            }
+            // $photoUrls = collect([]);
 
-            error_log(json_encode($photoUrls));
+            // foreach($photos as $photo) {
+            //     $photoUrls->push($photo->getFullUrl()."");
+            // }
+
+            // error_log(json_encode($photoUrls));
         } catch (\Throwable $th) {
             //throw $th;
             return $this->errorResponse("No Photos found");
         }
 
-        return $this->successResponse("Success", $photoUrls);
+        return $this->successResponse("Success", $photos);
     }
 
     /**
@@ -45,8 +48,8 @@ class PhotoController extends Controller
     public function store(Request $request)
     {
         //
-        error_log(json_encode($_FILES));
-        error_log(json_encode($request->file('photos')));
+        // error_log(json_encode($_FILES));
+        // error_log(json_encode($request->file('photos')));
         $validator = Validator::make($request->all(), [
             'photos' => 'required|array',
         ]);
@@ -55,11 +58,26 @@ class PhotoController extends Controller
             return $this->errorResponse($validator->errors());
         }
 
+        $photoUrls = collect([]);
         try {
             //code...
-            $photos = auth()->user()->photos->addAllMediaFromRequest('photos')->each(function ($fileAdder) {
-                $fileAdder->toMediaCollection('photos');
-            });
+
+
+            foreach($request->file('photos') as $photo) {
+
+                Cloudder::upload($photo->getRealPath(), null);
+                $uploadedFile = Cloudder::getResult();
+
+                auth()->user()->photos()->create([
+                    'name' => $photo->getClientOriginalName(),
+                    'url' => $uploadedFile['url'],
+                ]);
+                // $photoUrls->push($uploadedFile);
+
+            }
+            // $photos = auth()->user()->photos->addAllMediaFromRequest('photos')->each(function ($fileAdder) {
+            //     $fileAdder->toMediaCollection('photos');
+            // });
 
 
         } catch (\Throwable $th) {

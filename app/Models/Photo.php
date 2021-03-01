@@ -13,7 +13,8 @@ class Photo extends Model implements HasMedia
 
     protected $fillable = [
         'url',
-        'user_id'
+        'user_id',
+        'name'
     ];
 
     public function user() {

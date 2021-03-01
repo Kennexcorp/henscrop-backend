@@ -43,14 +43,14 @@ class User extends Authenticatable
     ];
 
     public function videos() {
-        return $this->hasOne(Video::class);
+        return $this->hasMany(Video::class);
     }
 
     public function documents() {
-        return $this->hasOne(Document::class);
+        return $this->hasMany(Document::class);
     }
 
     public function photos() {
-        return $this->hasOne(Photo::class);
+        return $this->hasMany(Photo::class);
     }
 }

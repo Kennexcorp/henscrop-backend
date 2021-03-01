@@ -16,6 +16,8 @@ class CreateVideosTable extends Migration
         Schema::create('videos', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->cascadeOnDelete();
+            $table->string("name")->nullable()->default(null);
+            $table->string("url")->nullable()->default(null);
             $table->timestamps();
         });
     }

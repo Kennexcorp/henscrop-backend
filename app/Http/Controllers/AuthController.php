@@ -58,11 +58,11 @@ class AuthController extends Controller
             'password' => Hash::make($request->password)
         ]);
 
-        $user->videos()->create([]);
+        // $user->videos()->create([]);
 
-        $user->photos()->create([]);
+        // $user->photos()->create([]);
 
-        $user->documents()->create([]);
+        // $user->documents()->create([]);
 
         // return ['token' => $user->createToken($request->device_name)->plainTextToken, 'user' => $user->toArray()];
         return $this->successResponse("Registration successful", ['user' => $user->toArray(), 'token' => $user->createToken($request->device_name)->plainTextToken]);
