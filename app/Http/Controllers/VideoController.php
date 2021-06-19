@@ -48,10 +48,10 @@ class VideoController extends Controller
         $videoUrls = collect([]);
         try {
             //code...
-            $files = collect([]);
+            // $files = collect([]);
             foreach ($request->file('videos') as $video) {
 
-                error_log(json_encode($video->getRealPath()));
+                // error_log(json_encode($video->getRealPath()));
                 Cloudder::uploadVideo($video->getRealPath(), null);
                 $uploadedFile = Cloudder::getResult();
 
@@ -60,10 +60,10 @@ class VideoController extends Controller
                     'url' => $uploadedFile['url'],
                 ]);
 
-                $files->push($uploadedFile);
+                // $files->push($uploadedFile);
             }
 
-            error_log(json_encode($files));
+            // error_log(json_encode($files));
         } catch (\Throwable $th) {
             //throw $th;
             return $this->errorResponse($th->getMessage());
